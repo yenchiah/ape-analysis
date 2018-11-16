@@ -1,6 +1,9 @@
 import sys
 import json
-from nltk import word_tokenize
+from nltk import word_tokenize, ngrams
+from nltk.collocations import BigramCollocationFinder
+from nltk.collocations import TrigramCollocationFinder
+from nltk.collocations import QuadgramCollocationFinder
 import pandas as pd
 from util.python3.Util import Util
 
@@ -9,12 +12,39 @@ mt_all = []
 pe_all = []
 
 def main(argv):
-    # Read data
-    read_file(dirname="data/dev", endswith=[".json"])
-    read_file(dirname="data/train", endswith=[".json"])
-    read_file(dirname="data/test", endswith=[".json"])
+    read_data()
+    #compute_sentence_length()
+    compute_ngrams()
 
-    # Compute the distribution of length
+def read_data():
+    read_file(dirname="data/dev", endswith=[".json"])
+    #read_file(dirname="data/train", endswith=[".json"])
+    #read_file(dirname="data/test", endswith=[".json"])
+
+def compute_ngrams():
+    mt_tokens = []
+    for s in mt_all:
+        mt_tokens.append(word_tokenize(s))
+
+    # Bigram
+    bi = BigramCollocationFinder.from_documents(mt_tokens)
+    #bi.apply_freq_filter(2)
+    #print(bi.ngram_fd.items())
+    bi_mc = bi.ngram_fd.most_common(20)
+    print(bi_mc)
+
+    # Trigram
+    tri = TrigramCollocationFinder.from_documents(mt_tokens)
+    tri_mc = tri.ngram_fd.most_common(20)
+    print(tri_mc)
+
+    # Quadgram
+    quad = QuadgramCollocationFinder.from_documents(mt_tokens)
+    quad_mc = quad.ngram_fd.most_common(20)
+    print(quad_mc)
+
+def compute_sentence_length():
+    # Compute the distribution of sentence length
     L_mt_all = []
     L_pe_all = []
     for s in mt_all:
@@ -25,7 +55,7 @@ def main(argv):
     print(pd.DataFrame(data=L_mt_all).describe())
     print("PE sentence length:")
     print(pd.DataFrame(data=L_pe_all).describe())
-    
+
 @util.loop_files
 def read_file(**kwargs):
     data = json.load(kwargs["file_obj"])
