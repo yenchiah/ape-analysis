@@ -6,6 +6,7 @@ from nltk.collocations import TrigramCollocationFinder
 from nltk.collocations import QuadgramCollocationFinder
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 import itertools
 import numpy as np
@@ -20,8 +21,8 @@ def main(argv):
     read_data()
     #compute_sentence_length(mt_all)
     #compute_sentence_length(pe_all)
-    #compute_ngrams_count(mt_all, "mt_ngram_count.png")
-    #compute_ngrams_count(pe_all, "pe_ngram_count.png")
+    compute_ngrams_tf_idf(mt_all, "mt_ngram_count.png", tp="count")
+    compute_ngrams_tf_idf(pe_all, "pe_ngram_count.png", tp="count")
     compute_ngrams_tf_idf(mt_all, "mt_ngram_tf_idf.png", tp="tf-idf")
     compute_ngrams_tf_idf(pe_all, "pe_ngram_tf_idf.png", tp="tf-idf")
     compute_ngrams_tf_idf(mt_all, "mt_ngram_tf.png", tp="tf")
@@ -53,7 +54,24 @@ def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf"):
         tick_font_size=14, title_font_size=14, h_size=7, w_size=7, rotate=True)
 
 # defines a custom vectorizer class
-class CustomVectorizer(TfidfVectorizer): 
+class CustomTfidfVectorizer(TfidfVectorizer): 
+    # overwrite the build_analyzer method, allowing one to create a custom analyzer for the vectorizer
+    def build_analyzer(self):
+        # load stop words using CountVectorizer's built in method
+        stop_words = self.get_stop_words()
+        # create the analyzer that will be returned by this method
+        def analyser(doc):
+            # Analyze each sentence of the input string seperately
+            ngrams = []
+            for s in re.split('[?.,!;-]', doc):
+                tokens = word_tokenize(s)
+                # use CountVectorizer's _word_ngrams built in method to remove stop words and extract n-grams
+                ngrams += self._word_ngrams(tokens, stop_words)
+            return ngrams
+        return analyser
+
+# defines a custom vectorizer class
+class CustomCountVectorizer(CountVectorizer): 
     # overwrite the build_analyzer method, allowing one to create a custom analyzer for the vectorizer
     def build_analyzer(self):
         # load stop words using CountVectorizer's built in method
@@ -77,13 +95,15 @@ def compute_tf_idf(text_corpus, n=20, n_gram=1, tp="tf-idf", lv=1):
 
     if tp == "tf":
         # Compute term frequency
-        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=False)
+        vectorizer = CustomTfidfVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=False)
     elif tp == "df":
         # Compute document frequency
-        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=True, smooth_idf=False)
+        vectorizer = CustomTfidfVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=True, smooth_idf=False)
+    elif tp == "count":
+        vectorizer = CustomCountVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram))
     else:
         # Compute tf-idf
-        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram))
+        vectorizer = CustomTfidfVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram))
 
     if lv == 0:
         # Sentence level
@@ -97,6 +117,8 @@ def compute_tf_idf(text_corpus, n=20, n_gram=1, tp="tf-idf", lv=1):
 
     if tp == "df":
         v = 1 / np.exp(vectorizer.idf_)
+    elif tp == "count":
+        v = np.asarray(np.sum(v, axis=0)).squeeze()
     else:
         v = np.asarray(np.mean(v, axis=0)).squeeze()
 
