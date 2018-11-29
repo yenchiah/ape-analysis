@@ -5,9 +5,12 @@ from nltk.collocations import BigramCollocationFinder
 from nltk.collocations import TrigramCollocationFinder
 from nltk.collocations import QuadgramCollocationFinder
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import itertools
+import numpy as np
 from util.python3.Util import Util
+import re
 
 util = Util()
 mt_all = []
@@ -15,20 +18,98 @@ pe_all = []
 
 def main(argv):
     read_data()
-    #compute_sentence_length()
-    compute_ngrams(mt_all, "mt_ngram.png")
-    compute_ngrams(pe_all, "pe_ngram.png")
+    #compute_sentence_length(mt_all)
+    #compute_sentence_length(pe_all)
+    #compute_ngrams_count(mt_all, "mt_ngram_count.png")
+    #compute_ngrams_count(pe_all, "pe_ngram_count.png")
+    compute_ngrams_tf_idf(mt_all, "mt_ngram_tf_idf.png", tp="tf-idf")
+    compute_ngrams_tf_idf(pe_all, "pe_ngram_tf_idf.png", tp="tf-idf")
+    compute_ngrams_tf_idf(mt_all, "mt_ngram_tf.png", tp="tf")
+    compute_ngrams_tf_idf(pe_all, "pe_ngram_tf.png", tp="tf")
+    compute_ngrams_tf_idf(mt_all, "mt_ngram_df.png", tp="df")
+    compute_ngrams_tf_idf(pe_all, "pe_ngram_df.png", tp="df")
 
 def read_data():
+    print("Read data...")
     read_file(dirname="data/dev", endswith=[".json"])
     read_file(dirname="data/train", endswith=[".json"])
     read_file(dirname="data/test", endswith=[".json"])
 
-def compute_ngrams(list_of_sentences, out_p):
+def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf"):
+    print("Compute ngrams: " + tp)
+    g = 10
+    data = []
+    for i in range(g):
+        data.append(compute_tf_idf(text_corpus, n=n, n_gram=i+1, tp=tp))
+    
+    # Plot
+    x = []
+    y = []
+    for d in data:
+        x.append(d["f"][::-1])
+        y.append(d["v"][::-1])
+    title = [str(i+1) + "-gram" for i in range(g)]
+    util.plot_bar_chart_grid(x, y, 1, len(data), title, out_p,
+        tick_font_size=14, title_font_size=14, h_size=7, w_size=7, rotate=True)
+
+# defines a custom vectorizer class
+class CustomVectorizer(TfidfVectorizer): 
+    # overwrite the build_analyzer method, allowing one to create a custom analyzer for the vectorizer
+    def build_analyzer(self):
+        # load stop words using CountVectorizer's built in method
+        stop_words = self.get_stop_words()
+        # create the analyzer that will be returned by this method
+        def analyser(doc):
+            # Analyze each sentence of the input string seperately
+            ngrams = []
+            for s in re.split('[?.,!;-]', doc):
+                tokens = word_tokenize(s)
+                # use CountVectorizer's _word_ngrams built in method to remove stop words and extract n-grams
+                ngrams += self._word_ngrams(tokens, stop_words)
+            return ngrams
+        return analyser
+
+def compute_tf_idf(text_corpus, n=20, n_gram=1, tp="tf-idf", lv=1):
+    if n_gram == 1:
+        sw = stopwords.words("english") + ["[", "]"]
+    else:
+        sw = ["[", "]"]
+
+    if tp == "tf":
+        # Compute term frequency
+        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=False)
+    elif tp == "df":
+        # Compute document frequency
+        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram), use_idf=True, smooth_idf=False)
+    else:
+        # Compute tf-idf
+        vectorizer = CustomVectorizer(stop_words=sw, ngram_range=(n_gram,n_gram))
+
+    if lv == 0:
+        # Sentence level
+        v = vectorizer.fit_transform(util.flatten_one_level(text_corpus))
+    elif lv == 1:
+        # Story level
+        v = vectorizer.fit_transform(reduce_dim(text_corpus))
+    else:
+        # All text
+        v = vectorizer.fit_transform([" ".join(reduce_dim(text_corpus))])
+
+    if tp == "df":
+        v = 1 / np.exp(vectorizer.idf_)
+    else:
+        v = np.asarray(np.mean(v, axis=0)).squeeze()
+
+    f = np.array(vectorizer.get_feature_names())
+    idx = np.argsort(v)[::-1][:n]
+    return {"f": f[idx], "v": v[idx]}
+
+def compute_ngrams_count(text_corpus, out_p, n=20):
+    print("Compute ngrams count...")
     list_of_tokens = []
-    n = 20
-    for s in list_of_sentences:
-        list_of_tokens.append(word_tokenize(s))
+    for document in text_corpus:
+        for sentence in document:
+            list_of_tokens.append(word_tokenize(sentence))
 
     # Unigram
     tokens = util.flatten_one_level(list_of_tokens)
@@ -56,7 +137,7 @@ def compute_ngrams(list_of_sentences, out_p):
     data = [uni_mc, bi_mc, tri_mc, quad_mc]
     x = []
     y = []
-    for i in range(4):
+    for i in range(len(data)):
         x_ng = []
         y_ng = []
         for d in data[i]:
@@ -68,21 +149,20 @@ def compute_ngrams(list_of_sentences, out_p):
         x.append(x_ng[::-1])
         y.append(y_ng[::-1])
     title = ["Unigram", "Bigram", "Trigram", "Quadgram"]
-    util.plot_bar_chart_grid(x, y, 1, 4, title, out_p,
-        tick_font_size=16, title_font_size=18, h_size=7, w_size=4, rotate=True)
+    util.plot_bar_chart_grid(x, y, 1, len(data), title, out_p,
+        tick_font_size=14, title_font_size=14, h_size=8, w_size=5, rotate=True)
 
-def compute_sentence_length():
+def compute_sentence_length(text_corpus):
     # Compute the distribution of sentence length
-    L_mt_all = []
-    L_pe_all = []
-    for s in mt_all:
-        L_mt_all.append(len(word_tokenize(s)))
-    for s in pe_all:
-        L_pe_all.append(len(word_tokenize(s)))
-    print("MT sentence length:")
-    print(pd.DataFrame(data=L_mt_all).describe())
-    print("PE sentence length:")
-    print(pd.DataFrame(data=L_pe_all).describe())
+    L_all = []
+    for document in text_corpus:
+        for sentence in document:
+            L_all.append(len(word_tokenize(sentence)))
+    print(pd.DataFrame(data=L_all).describe())
+
+# Reduce one dimension of a nested list with strings
+def reduce_dim(nested_list):
+    return [" ".join(k) for k in nested_list]
 
 @util.loop_files
 def read_file(**kwargs):
@@ -94,10 +174,8 @@ def read_file(**kwargs):
     for d in data["edited_stories"]:
         pe += d["normalized_edited_story_text_sent"]
     # Save to global
-    for s in mt:
-        mt_all.append(s)
-    for s in pe:
-        pe_all.append(s)
+    mt_all.append(mt)
+    pe_all.append(pe)
 
 if __name__ == "__main__":
     main(sys.argv)
