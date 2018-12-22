@@ -41,12 +41,32 @@ def main(argv):
     #compute_ngrams_tf_idf(pe_all, "pe_ngram_df.png", tp="df")
 
     # This is for the text analysis of Smell Pittsburgh Data
+    analyze_smell_data()
+
+def analyze_smell_data():
     print("Read smell data...")
     df_smell = pd.read_csv("data/smell-reports.csv")
     smell_description = [list(df_smell["smell_description"].dropna())]
     feelings_symptoms = [list(df_smell["feelings_symptoms"].dropna())]
-    compute_ngrams_tf_idf(smell_description, "smell_description_ngram.png", tp="count-smell", g=2, lv=0, n=10, title_prefix="Description ")
-    compute_ngrams_tf_idf(feelings_symptoms, "smell_symptoms_ngram.png", tp="count-smell", g=2, lv=0, n=10, title_prefix="Symptom ")
+    n = 10
+    lv = 0
+    tp = "count-smell"
+    out_p = "smell.png"
+    data = []
+    data.append(compute_tf_idf(smell_description, n=n, n_gram=1, tp=tp, lv=lv))
+    data.append(compute_tf_idf(smell_description, n=n, n_gram=2, tp=tp, lv=lv))
+    data.append(compute_tf_idf(feelings_symptoms, n=n, n_gram=1, tp=tp, lv=lv))
+    data.append(compute_tf_idf(feelings_symptoms, n=n, n_gram=2, tp=tp, lv=lv))
+
+    # Plot
+    x = []
+    y = []
+    title = ["Description (unigram)", "Description (bigram)", "Symptom (unigram)", "Symptom (bigram)"]
+    for d in data:
+        x.append(d["f"][::-1])
+        y.append(d["v"][::-1])
+    util.plot_bar_chart_grid(x, y, 2, 2, title, out_p,
+        tick_font_size=18, title_font_size=18, h_size=5, w_size=5, wspace=0.8, hspace=0.2, rotate=True)
 
 def read_ape_data():
     print("Read ape data...")
@@ -68,7 +88,7 @@ def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=10, lv=1, tit
         y.append(d["v"][::-1])
     title = [title_prefix + str(i+1) + "-gram" for i in range(g)]
     util.plot_bar_chart_grid(x, y, 1, len(data), title, out_p,
-        tick_font_size=16, title_font_size=18, h_size=4, w_size=5, wspace=1, rotate=True)
+        tick_font_size=16, title_font_size=18, h_size=4, w_size=5, wspace=0.7, rotate=True)
 
 def replace(string, substitutions):
     substrings = sorted(substitutions, key=len, reverse=True)
