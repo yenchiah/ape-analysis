@@ -68,7 +68,7 @@ def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=10, lv=1, tit
         y.append(d["v"][::-1])
     title = [title_prefix + str(i+1) + "-gram" for i in range(g)]
     util.plot_bar_chart_grid(x, y, 1, len(data), title, out_p,
-        tick_font_size=18, title_font_size=20, h_size=5, w_size=5, wspace=1, rotate=True)
+        tick_font_size=16, title_font_size=18, h_size=4, w_size=5, wspace=1, rotate=True)
 
 def replace(string, substitutions):
     substrings = sorted(substitutions, key=len, reverse=True)
