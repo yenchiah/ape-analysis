@@ -32,6 +32,9 @@ def main(argv):
     read_ape_data("GLAC/") # the Korean team
     #read_ape_data("AREL/") # the William one
     compare_pos(mt_all, pe_all)
+
+    # BUG: the followings does not work since we changed the structure of pe_all
+    # pe_all looks like [[[]]], mt_all looks like [[]]
     #compute_sentence_length(mt_all)
     #compute_sentence_length(pe_all)
     #compute_ngrams_tf_idf(mt_all, "mt_ngram_count.png", tp="count")
@@ -62,13 +65,29 @@ def compute_pos_table(text_corpus):
     num_story = 0
     c = Counter()
     for story in text_corpus:
-        pos_story = []
-        for sentence in story:
-            sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
-            tokens = word_tokenize(sentence)
-            pos_story += [p[1] for p in pos_tag(tokens, tagset="universal")]
-        c += Counter(pos_story)
-        num_story += 1
+        if type(story[0]) == str: # this means there is only one story
+            pos_story = []
+            for sentence in story:
+                sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                tokens = word_tokenize(sentence)
+                pos_story += [p[1] for p in pos_tag(tokens, tagset="universal")]
+            c += Counter(pos_story)
+            num_story += 1
+        elif type(story[0]) == list: # this means multiple workers submit multiple versions of the story
+            num_workers = 0
+            d = Counter()
+            for worker_submit in story:
+                pos_worker_submit = []
+                for sentence in worker_submit:
+                    sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                    tokens = word_tokenize(sentence)
+                    pos_worker_submit += [p[1] for p in pos_tag(tokens, tagset="universal")]
+                d += Counter(pos_worker_submit)
+                num_workers += 1
+            for k in d:
+                d[k] /= num_workers
+            c += Counter(d)
+            num_story += 1
     for k in c:
         c[k] /= num_story
     df = pd.DataFrame(c, index=[0])
@@ -294,8 +313,9 @@ def read_file(**kwargs):
     mt = [i.strip() + " ." for i in mt.split(".")]
     mt = mt[:-1]
     mt_all.append(mt)
+    pe = []
     for d in data["edited_stories"]:
-        pe = d["normalized_edited_story_text_sent"]
+        pe.append(d["normalized_edited_story_text_sent"])
         pe_all.append(pe)
 
 if __name__ == "__main__":
