@@ -1,6 +1,6 @@
 import sys
 import json
-from nltk import word_tokenize, ngrams, FreqDist
+from nltk import word_tokenize, ngrams, FreqDist, pos_tag
 from nltk.collocations import BigramCollocationFinder
 from nltk.collocations import TrigramCollocationFinder
 from nltk.collocations import QuadgramCollocationFinder
@@ -13,6 +13,7 @@ import numpy as np
 from util.python3.Util import Util
 import re
 from nltk.stem import WordNetLemmatizer
+from collections import Counter
 
 util = Util()
 
@@ -28,7 +29,9 @@ class LemmaTokenizer(object):
 
 def main(argv):
     # This is for the text analysis of APE data
-    #read_ape_data()
+    read_ape_data("GLAC/") # the Korean team
+    #read_ape_data("AREL/") # the William one
+    compare_pos(mt_all, pe_all)
     #compute_sentence_length(mt_all)
     #compute_sentence_length(pe_all)
     #compute_ngrams_tf_idf(mt_all, "mt_ngram_count.png", tp="count")
@@ -41,7 +44,39 @@ def main(argv):
     #compute_ngrams_tf_idf(pe_all, "pe_ngram_df.png", tp="df")
 
     # This is for the text analysis of Smell Pittsburgh Data
-    analyze_smell_data()
+    #analyze_smell_data()
+
+def compare_pos(mt_all, pe_all):
+    df_mt = compute_pos_table(mt_all)
+    df_mt.index = ["Pre-Edit"]
+    df_pe = compute_pos_table(pe_all)
+    df_pe.index = ["Post-Edit"]
+    df_diff = df_pe - df_mt
+    df = pd.concat([df_mt, df_pe])
+    df.loc["Diff"] = df.loc["Post-Edit"] - df.loc["Pre-Edit"]
+    df = df.round(2)
+    print(df)
+    df.to_csv("pos.csv")
+
+def compute_pos_table(text_corpus):
+    num_story = 0
+    c = Counter()
+    for story in text_corpus:
+        pos_story = []
+        for sentence in story:
+            sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+            tokens = word_tokenize(sentence)
+            pos_story += [p[1] for p in pos_tag(tokens, tagset="universal")]
+        c += Counter(pos_story)
+        num_story += 1
+    for k in c:
+        c[k] /= num_story
+    df = pd.DataFrame(c, index=[0])
+    if "X" in df.columns:
+        df = df.drop(["X"], axis=1)
+    df = df.reindex(sorted(df.columns), axis=1) # sort by column
+    df["Total"] = df.sum(axis=1)
+    return df
 
 def analyze_smell_data():
     print("Read smell data...")
@@ -68,13 +103,13 @@ def analyze_smell_data():
     util.plot_bar_chart_grid(x, y, 2, 2, title, out_p,
         tick_font_size=18, title_font_size=18, h_size=5, w_size=5, wspace=0.8, hspace=0.2, rotate=True)
 
-def read_ape_data():
+def read_ape_data(path):
     print("Read ape data...")
-    read_file(dirname="data/dev", endswith=[".json"])
-    read_file(dirname="data/train", endswith=[".json"])
-    read_file(dirname="data/test", endswith=[".json"])
+    read_file(dirname=path+"dev", endswith=[".json"])
+    read_file(dirname=path+"train", endswith=[".json"])
+    read_file(dirname=path+"test", endswith=[".json"])
 
-def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=10, lv=1, title_prefix=""):
+def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=3, lv=1, title_prefix=""):
     print("Compute ngrams: " + tp)
     data = []
     for i in range(g):
@@ -88,7 +123,7 @@ def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=10, lv=1, tit
         y.append(d["v"][::-1])
     title = [title_prefix + str(i+1) + "-gram" for i in range(g)]
     util.plot_bar_chart_grid(x, y, 1, len(data), title, out_p,
-        tick_font_size=16, title_font_size=18, h_size=4, w_size=5, wspace=0.7, rotate=True)
+        tick_font_size=16, title_font_size=18, h_size=6, w_size=5, wspace=0.7, rotate=True)
 
 def replace(string, substitutions):
     substrings = sorted(substitutions, key=len, reverse=True)
@@ -258,12 +293,10 @@ def read_file(**kwargs):
     mt = data["auto_story_text_normalized"].strip()
     mt = [i.strip() + " ." for i in mt.split(".")]
     mt = mt[:-1]
-    pe = []
-    for d in data["edited_stories"]:
-        pe += d["normalized_edited_story_text_sent"]
-    # Save to global
     mt_all.append(mt)
-    pe_all.append(pe)
+    for d in data["edited_stories"]:
+        pe = d["normalized_edited_story_text_sent"]
+        pe_all.append(pe)
 
 if __name__ == "__main__":
     main(sys.argv)
