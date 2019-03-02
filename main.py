@@ -14,6 +14,9 @@ from util.python3.Util import Util
 import re
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
 
 util = Util()
 
@@ -29,9 +32,11 @@ class LemmaTokenizer(object):
 
 def main(argv):
     # This is for the text analysis of APE data
-    read_ape_data("GLAC/") # the Korean team
-    #read_ape_data("AREL/") # the William one
-    compare_pos(mt_all, pe_all)
+    #read_ape_data("GLAC/") # the Korean team
+    read_ape_data("AREL/") # the William one
+    #compare_pos(mt_all, pe_all)
+    compare_ttr_by_story(mt_all, pe_all)
+    #compare_ttr_all(mt_all, pe_all)
 
     # BUG: the followings does not work since we changed the structure of pe_all
     # pe_all looks like [[[]]], mt_all looks like [[]]
@@ -48,6 +53,114 @@ def main(argv):
 
     # This is for the text analysis of Smell Pittsburgh Data
     #analyze_smell_data()
+
+def compare_ttr_all(mt_all, pe_all):
+    d = {"ttr": []}
+    d["ttr"].append(compute_ttr_all(mt_all))
+    d["ttr"].append(compute_ttr_all(pe_all))
+    df = pd.DataFrame(d)
+    df.index = ["Pre-Edit", "Post-Edit"]
+    df = df.round(2)
+    print(df)
+    df.to_csv("ttr_all.csv")
+
+def compute_ttr_all(text_corpus):
+    word_type = Counter()
+    num_words = 0
+    for story in text_corpus:
+        if type(story[0]) == str: # this means there is only one story
+            for sentence in story:
+                sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                tokens = word_tokenize(sentence)
+                for word, pos in pos_tag(tokens, tagset="universal"):
+                    if pos is not ".":
+                        word_type[word.lower() + "#" + pos] += 1
+                        num_words += 1
+        elif type(story[0]) == list: # this means multiple workers submit multiple versions of the story
+            ttr_story = []
+            for worker_submit in story:
+                for sentence in worker_submit:
+                    sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                    tokens = word_tokenize(sentence)
+                    for word, pos in pos_tag(tokens, tagset="universal"):
+                        if pos is not ".":
+                            word_type[word.lower() + "#" + pos] += 1
+                            num_words += 1
+    return len(word_type) / num_words
+
+def compare_ttr_by_story(mt_all, pe_all):
+    d = {"mean": [], "std": []}
+    m, v, ttr_mt = compute_ttr_by_story(mt_all)
+    d["mean"].append(m)
+    d["std"].append(v)
+    m, v, ttr_pe = compute_ttr_by_story(pe_all)
+    d["mean"].append(m)
+    d["std"].append(v)
+    df = pd.DataFrame(d)
+    df.index = ["Pre-Edit", "Post-Edit"]
+    df = df.round(2)
+    print(df)
+    df.to_csv("ttr_story.csv")
+    plot_kde(ttr_mt, ttr_pe, "ttr_story.png")
+    print("n=", len(ttr_mt), len(ttr_pe))
+    s, p = stats.ttest_rel(ttr_mt, ttr_pe)
+    df_ttest = pd.DataFrame({"test_statistic": [s], "p_value": [p], "N": [len(ttr_mt)]})
+    df_ttest = df_ttest.round(6)
+    print(df_ttest)
+    df_ttest.to_csv("ttr_paired_ttest_two_tail.csv")
+
+def plot_kde(a, b, file_name):
+    sns.set(rc={"figure.figsize":(12,1.5)})
+    plot = sns.kdeplot(a, shade=True, linewidth=2, color="#4575b4", legend=True, label="Automatic")
+    #plot = sns.distplot(a,kde=False,rug=False,hist=True,kde_kws={"linewidth":1},norm_hist=True,bins=np.linspace(0,1,81))
+    plot = sns.kdeplot(b, shade=True, linewidth=4, color="#d73027", legend=True, label="Human-Edited")
+    #plot = sns.distplot(b,kde=False,rug=False,hist=True,kde_kws={"linewidth":1},norm_hist=True,bins=np.linspace(0,1,81))
+    axes = plot.axes
+    axes.legend(loc="upper left", frameon=False, ncol=1, fontsize=18, borderaxespad=0, borderpad=0)
+    #axes.grid(False)
+    axes.set_facecolor((1, 1, 1))
+    axes.axhline(linewidth=3, color="#000000")
+    #axes.axvline(linewidth=1, color="#000000")
+    axes.tick_params(axis="both", pad=0, labelsize=18)
+    axes.set_xlim([0,1])
+    #axes.set_ylim([0,1])
+    #plt.xticks([])
+    plt.yticks([])
+    plt.tight_layout()
+    plt.savefig(file_name, dpi=150)
+
+# Token-type ratio
+def compute_ttr_by_story(text_corpus):
+    ttr = []
+    for story in text_corpus:
+        word_type_story = Counter()
+        num_words_story = 0
+        if type(story[0]) == str: # this means there is only one story
+            for sentence in story:
+                sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                tokens = word_tokenize(sentence)
+                for word, pos in pos_tag(tokens, tagset="universal"):
+                    if pos is not ".":
+                        word_type = word.lower() + "#" + pos # this is a type
+                        word_type_story[word_type] += 1
+                        num_words_story += 1
+            ttr.append(len(word_type_story) / num_words_story)
+        elif type(story[0]) == list: # this means multiple workers submit multiple versions of the story
+            ttr_story = []
+            for worker_submit in story:
+                word_type_worker = Counter()
+                num_words_worker = 0
+                for sentence in worker_submit:
+                    sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
+                    tokens = word_tokenize(sentence)
+                    for word, pos in pos_tag(tokens, tagset="universal"):
+                        if pos is not ".":
+                            word_type = word.lower() + "#" + pos # this is a type
+                            word_type_worker[word_type] += 1
+                            num_words_worker += 1
+                ttr_story.append(len(word_type_worker) / num_words_worker)
+            ttr.append(np.mean(ttr_story))
+    return (np.mean(ttr), np.std(ttr), ttr)
 
 def compare_pos(mt_all, pe_all):
     df_mt = compute_pos_table(mt_all)
@@ -316,7 +429,7 @@ def read_file(**kwargs):
     pe = []
     for d in data["edited_stories"]:
         pe.append(d["normalized_edited_story_text_sent"])
-        pe_all.append(pe)
+    pe_all.append(pe)
 
 if __name__ == "__main__":
     main(sys.argv)
