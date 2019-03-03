@@ -23,6 +23,8 @@ util = Util()
 # This is for APE data
 mt_all = []
 pe_all = []
+p_id = [] # photo id
+a_id = [] # album id
 
 class LemmaTokenizer(object):
     def __init__(self):
@@ -32,10 +34,10 @@ class LemmaTokenizer(object):
 
 def main(argv):
     # This is for the text analysis of APE data
-    #read_ape_data("GLAC/") # the Korean team
-    read_ape_data("AREL/") # the William one
-    #compare_pos(mt_all, pe_all)
-    compare_ttr_by_story(mt_all, pe_all)
+    read_ape_data("GLAC/") # the Korean team
+    #read_ape_data("AREL/") # the William one
+    compare_pos(mt_all, pe_all)
+    #compare_ttr_by_story(mt_all, pe_all)
     #compare_ttr_all(mt_all, pe_all)
 
     # BUG: the followings does not work since we changed the structure of pe_all
@@ -163,9 +165,9 @@ def compute_ttr_by_story(text_corpus):
     return (np.mean(ttr), np.std(ttr), ttr)
 
 def compare_pos(mt_all, pe_all):
-    df_mt = compute_pos_table(mt_all)
+    df_mt, c_story_list_mt = compute_pos_table(mt_all)
     df_mt.index = ["Pre-Edit"]
-    df_pe = compute_pos_table(pe_all)
+    df_pe, c_story_list_pe = compute_pos_table(pe_all)
     df_pe.index = ["Post-Edit"]
     df_diff = df_pe - df_mt
     df = pd.concat([df_mt, df_pe])
@@ -174,9 +176,23 @@ def compare_pos(mt_all, pe_all):
     print(df)
     df.to_csv("pos.csv")
 
+    df_noun = {"p_id": [], "a_id": [], "c_mt_noun": [], "c_pe_noun": [], "mt": [], "pe": []}
+    index = 0
+    for c_mt, c_pe in zip(c_story_list_mt, c_story_list_pe):
+        df_noun["p_id"].append(p_id[index])
+        df_noun["a_id"].append(a_id[index])
+        df_noun["c_mt_noun"].append(c_mt["NOUN"])
+        df_noun["c_pe_noun"].append(c_pe["NOUN"])
+        df_noun["mt"].append(mt_all[index])
+        df_noun["pe"].append(pe_all[index])
+        index += 1
+    df_noun = pd.DataFrame(df_noun)
+    df_noun.to_csv("df_noun.csv")
+
 def compute_pos_table(text_corpus):
     num_story = 0
     c = Counter()
+    c_story_list = []
     for story in text_corpus:
         if type(story[0]) == str: # this means there is only one story
             pos_story = []
@@ -184,7 +200,9 @@ def compute_pos_table(text_corpus):
                 sentence = sentence.replace("[male]", "Tom").replace("[female]", "Amy")
                 tokens = word_tokenize(sentence)
                 pos_story += [p[1] for p in pos_tag(tokens, tagset="universal")]
-            c += Counter(pos_story)
+            cc = Counter(pos_story)
+            c += cc
+            c_story_list.append(cc)
             num_story += 1
         elif type(story[0]) == list: # this means multiple workers submit multiple versions of the story
             num_workers = 0
@@ -199,7 +217,9 @@ def compute_pos_table(text_corpus):
                 num_workers += 1
             for k in d:
                 d[k] /= num_workers
-            c += Counter(d)
+            cc = Counter(d)
+            c += cc
+            c_story_list.append(cc)
             num_story += 1
     for k in c:
         c[k] /= num_story
@@ -208,7 +228,7 @@ def compute_pos_table(text_corpus):
         df = df.drop(["X"], axis=1)
     df = df.reindex(sorted(df.columns), axis=1) # sort by column
     df["Total"] = df.sum(axis=1)
-    return df
+    return (df, c_story_list)
 
 def analyze_smell_data():
     print("Read smell data...")
@@ -426,6 +446,8 @@ def read_file(**kwargs):
     mt = [i.strip() + " ." for i in mt.split(".")]
     mt = mt[:-1]
     mt_all.append(mt)
+    p_id.append(data["photo_sequence_id"])
+    a_id.append(data["album_id"])
     pe = []
     for d in data["edited_stories"]:
         pe.append(d["normalized_edited_story_text_sent"])

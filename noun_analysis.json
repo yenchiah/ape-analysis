@@ -1,0 +1,157 @@
+[{
+  "photo_sequence_id": "43975069-43975081-43975087-43975089-43975112",
+  "album_id": 962352,
+  "c_mt_noun_glac": 7,
+  "c_pe_noun_glac": 10.4,
+  "mt_glac": ["the wedding was beautiful .", "the bride and groom were very happy .", "the family was so happy to be married .", "the couple was very excited .", "the reception was a success ."],
+  "mt_glac_noun": ["wedding", "bride", "groom", "family", "couple", "reception", "success"],
+  "pe_glac": [
+    ["i attended a beautiful wedding today .", "the bride and groom were very happy .", "i attended the wedding reception afterwards which everyone enjoyed ."],
+    ["what a beautiful day sharing in the love of [male] & [female] !", "the best man speech was priceless and check out that cake ... yummy ."],
+    ["the wedding was wondrous .", "the bride and groom were delighted and delightful .", "the family was proud for the marriage .", "the couple beaming and ready to start an new family of their own .", "the reception hit all the top notes ."],
+    ["the wedding was beautiful .", "the bride and groom had a wonderful time .", "the family was glad to be at the wedding .", "the couple had fun with the cake .", "the reception was a success ."],
+    ["the wedding was beautiful and everyone had fun .", "the bride and groom were very happy that everything went smooth .", "the family was so happy to be married and were ready for their honeymoon .", "the couple was very excited and could n't wait for the reception .", "the reception was a success due to all the good food ."]
+  ],
+  "pe_glac_noun": [
+    ["i", "wedding", "today", "bride", "groom", "i", "wedding", "reception", "afterwards", "everyone"],
+    ["day", "love", "[", "male", "]", "[", "]", "man", "speech", "cake", "yummy"],
+    ["wedding", "bride", "groom", "family", "marriage", "couple", "beaming", "family", "reception", "notes"],
+    ["wedding", "bride", "groom", "time", "family", "wedding", "couple", "fun", "cake", "reception", "success"],
+    ["wedding", "everyone", "fun", "bride", "groom", "everything", "family", "honeymoon", "couple", "reception", "reception", "success", "food"]
+  ],
+  "c_mt_noun_arel": 15.0,
+  "c_pe_noun_arel": 12.6,
+  "mt_arel": ["the bride and groom are getting married at the wedding .", "the bride and groom cut the cake .", "the bride and groom danced the night away .", "the bride and groom danced the night away .", "everyone had a great time at the party ."],
+  "mt_arel_noun": ["bride", "groom", "wedding", "bride", "groom", "cake", "bride", "groom", "night", "bride", "groom", "night", "everyone", "time", "party"],
+  "pe_arel": [
+    ["i saw the bride and groom getting married .", "they cut the cake and made silly poses .", "everyone had fun dancing at the wedding .", "the groom made a really nice speech .", "everyone had a really great time at the wedding ."],
+    ["the bride and groom had a wedding and got married .", "they cut the cake .", "the bride and groom danced the night away .", "they cut the cake and we dug in .", "everyone had a great time at the party ."],
+    ["the bride and the groom got married at the wedding , and then cut the cake at the reception .", "they danced the night away , and everyone had a great time ."],
+    ["the bride and groom are getting married at the wedding .", "the bride and groom cut the cake .", "the bride and groom danced the night away .", "the groom held a toast to commemorate the day .", "everyone had a great time at the party ."],
+    ["the bride and groom are getting married it was so beautiful .", "the bride and groom had a blast cutting the cake .", "the bride and groom danced the night away they are so lovely .", "the grom had a wonderful performance for his bride .", "everyone had a great time at the party and loved being a part of their special day ."]
+  ],
+  "pe_arel_noun": [
+    ["i", "bride", "groom", "cake", "poses", "everyone", "wedding", "groom", "speech", "everyone", "time", "wedding"],
+    ["bride", "groom", "wedding", "cake", "bride", "groom", "night", "cake", "everyone", "time", "party"],
+    ["bride", "groom", "wedding", "cake", "reception", "night", "everyone", "time"],
+    ["bride", "groom", "wedding", "bride", "groom", "cake", "bride", "groom", "night", "groom", "toast", "day", "everyone", "time", "party"],
+    ["bride", "groom", "bride", "groom", "blast", "cake", "bride", "groom", "night", "grom", "performance", "bride", "everyone", "time", "party", "part", "day"]
+  ]
+}, {
+  "photo_sequence_id": "66683446-66683388-66683420-66683454-66683442",
+  "album_id": 1438619,
+  "c_mt_noun_glac": 6,
+  "c_pe_noun_glac": 9.6,
+  "mt_glac": ["the family was having a great time .", "the baby was happy to see him .", "the food was delicious .", "the kids were excited .", "the dog was tired ."],
+  "mt_glac_noun": ["family", "time", "baby", "food", "kids", "dog"],
+  "pe_glac": [
+    ["the family had such a great time .", "the kids were excited to come together , the food prepared was insanely good this time around , and even the baby was overwhelmed with joy , especially after seeing her father .", "after it all , everyone still had that lingering high .", "well , except the dog , who was tuckered out by all the excitement ."],
+    ["we had a fun family sleepover .", "we played some monopoly before eating a large feast of a dinner .", "then we ended the night by watching a movie before everyone tuckered out and slept ."],
+    ["the family was having a great time at our relative 's home .", "the baby was happy to see my uncle and the girls played games all day .", "the food was delicious and we all helped cook .", "the kids were excited for the sleepover .", "the dog was tired and so was i."],
+    ["[male] and [female] were glad the family was having a great time .", "the baby was happy to see him .", "the food was delicious .", "the kids were excited .", "the dog was tired ."],
+    ["the family was having a great time .", "they played games .", "everyone enjoyed a great meal .", "then everyone relaxed together ."]
+  ],
+  "pe_glac_noun": [
+    ["family", "time", "kids", "food", "time", "baby", "joy", "father", "everyone", "dog", "excitement"],
+    ["family", "sleepover", "monopoly", "feast", "dinner", "night", "movie", "everyone"],
+    ["family", "time", "relative", "home", "baby", "uncle", "girls", "games", "day", "food", "cook", "kids", "sleepover", "dog", "i"],
+    ["male", "]", "[", "]", "family", "time", "baby", "food", "kids", "dog"],
+    ["family", "time", "games", "everyone", "meal", "everyone"]
+  ],
+  "c_mt_noun_arel": 15.0,
+  "c_pe_noun_arel": 12.8,
+  "mt_arel": ["i had a great time at the party last night .", "we had a lot of fun at the party .", "we had a lot of fun .", "he had a lot of fun playing with the kids .", "after a long day of work , he fell asleep on the couch ."],
+  "mt_arel_noun": ["i", "time", "party", "night", "lot", "fun", "party", "lot", "fun", "lot", "fun", "kids", "day", "work", "couch"],
+  "pe_arel": [
+    ["i had a great time at the party last night .", "we had a lot of fun .", "he had a lot of fun playing with the kids .", "the family ate a great meal but after a long day of work , he fell asleep on the couch ."],
+    ["she have a great time at the party last night .", "we have a lot of fun at the party .", "we have a lot of fun .", "we have a lot of fun playing with the him .", "after a long day of work , he fell asleep on the couch ."],
+    ["i had a great time at the party last night !", "we all had a lot of fun .", "[male] had a lot of fun playing with the kids , but after a long day of work , he fell asleep on the couch ."],
+    ["i had a great time at the party last night .", "we all had a lot of fun he had a lot of fun playing with the kids .", "after a long day of work , he fell asleep in the chair ."],
+    ["i had a great time at the party last night .", "the dinner was a lot of fun .", "he had a lot of fun playing with the kids .", "after a long day , he fell asleep on the couch ."]
+  ],
+  "pe_arel_noun": [
+    ["i", "time", "party", "night", "lot", "fun", "lot", "fun", "kids", "family", "meal", "day", "work", "couch"],
+    ["time", "party", "night", "lot", "fun", "party", "lot", "fun", "lot", "fun", "day", "work", "couch"],
+    ["i", "time", "party", "night", "lot", "fun", "male", "]", "lot", "fun", "kids", "day", "work", "couch"],
+    ["i", "time", "party", "night", "lot", "fun", "lot", "fun", "kids", "day", "work", "chair"],
+    ["i", "time", "party", "night", "dinner", "lot", "fun", "lot", "fun", "kids", "day", "couch"]
+  ]
+}, {
+  "photo_sequence_id": "4426773083-4427535674-4427535382-4427535594-4427535416",
+  "album_id": 72157623606238012,
+  "c_mt_noun_glac": 3,
+  "c_pe_noun_glac": 6.4,
+  "mt_glac": ["the speaker was very engaging .", "he was very proud of his work .", "he was also given a speech .", "he was happy to be there .", "he was honored ."],
+  "mt_glac_noun": ["speaker", "work", "speech"],
+  "pe_glac": [
+    ["the speaker was very engaging during his speech .", "he was very proud of his work .", "he was honored and happy to be there ."],
+    ["a speaker was giving a presentation about company profits .", "he was very professional and engaging with the audience .", "he worked with two members of the it department to make sure the presentation went well ."],
+    ["the speaker engaged the crowd .", "he was proud to be speaking .", "his work was the topic of his speech .", "he was happy to have been invited .", "he was an honored guest of the university ."],
+    ["the speaker was very engaging .", "[male] was very proud of his work .", "he gave a passionate speech .", "he was happy to be there .", "[male] said he was honored to be invited ."],
+    ["[male] had an important presentation at the office .", "he had to present the new business model he has been working on .", "he looked very confident and explained the presentation well .", "he was very proud of his work .", "he was also given a speech .", "he was happy to be there .", "he was honored ."]
+  ],
+  "pe_glac_noun": [
+    ["speaker", "speech", "work"],
+    ["speaker", "presentation", "company", "profits", "audience", "members", "department", "presentation"],
+    ["speaker", "crowd", "work", "topic", "speech", "guest", "university"],
+    ["speaker", "male", "]", "work", "passionate", "speech", "male", "]"],
+    ["male", "]", "presentation", "office", "business", "model", "presentation", "work", "speech"]
+  ],
+  "c_mt_noun_arel": 8.0,
+  "c_pe_noun_arel": 5.6,
+  "mt_arel": ["the speaker gave a speech at the conference .", "he gave a great speech .", "the speaker gave a speech .", "he gave a great speech .", "he was very proud of his work ."],
+  "mt_arel_noun": ["speaker", "speech", "conference", "speech", "speaker", "speech", "speech", "work"],
+  "pe_arel": [
+    ["the speaker gave a speech at the conference .", "he gave a great speech .", "there were technical issues in the middle .", "he seemed relieved when it was over ."],
+    ["the speaker gave a great speech at the conference .", "he spoke for about 30 minutes and it was interesting ."],
+    ["the speaker gave a speech at the conference .", "it was a great speech , and he was proud of his work ."],
+    ["the speaker spoke at the conference .", "he gave a great speech , and he was very proud of his work ."],
+    ["the speaker gave a speech at the meeting .", "he gave a awesome speech .", "the speaker gave a discourse .", "he gave a incredible speech .", "he was extremely glad for his work ."]
+  ],
+  "pe_arel_noun": [
+    ["speaker", "speech", "conference", "speech", "issues", "middle"],
+    ["speaker", "speech", "conference", "minutes"],
+    ["speaker", "speech", "conference", "speech", "proud", "work"],
+    ["speaker", "conference", "speech", "work"],
+    ["speaker", "speech", "meeting", "speech", "speaker", "discourse", "speech", "work"]
+  ]
+}, {
+  "photo_sequence_id": "5534276385-5534857062-5534857232-5534857714-5534859722",
+  "album_id": 72157626285768710,
+  "c_mt_noun_glac": 8,
+  "c_pe_noun_glac": 11.2,
+  "mt_glac": ["the conference was a lot of fun .", "there were a lot of people that showed up .", "we all got to talk about the new technology .", "the speaker was very good .", "afterward we all went back home ."],
+  "mt_glac_noun": ["conference", "lot", "fun", "lot", "people", "technology", "speaker", "home"],
+  "pe_glac": [
+    ["the conference was a lively event .", "many showed up .", "we spoke at length about new technology .", "one speaker was particularly good .", "afterwards , we all went back home enriched ."],
+    ["the conference was a lot of fun .", "there were a lot of people that showed up .", "there were flags hanging and the woman held a book up in front of everyone .", "the man spoke from behind a podium .", "the next man spoke as well ."],
+    ["the conference was a lot of fun and a lot of people that showed up .", "we all got to talk about the new technology and enjoy the exhibits .", "the speakers were very good and talked about different things .", "afterward a long day we all went back home ."],
+    ["the conference was a lot of fun .", "there were a lot of people that showed up .", "we all got to talk about the new technology .", "the speaker was good and listened to all of our complaints .", "afterward we all went back home ."],
+    ["the conference was also an interesting expo , displaying many new books on technology .", "a lot of people showed up to hear the guest speakers .", "the speakers made enlightening presentations .", "afterwards , we had the opportunity to share more detailed information about new technology before going home ."]
+  ],
+  "pe_glac_noun": [
+    ["conference", "event", "length", "technology", "speaker", "afterwards", "home", "enriched"],
+    ["conference", "lot", "fun", "lot", "people", "flags", "woman", "book", "front", "everyone", "man", "podium", "man"],
+    ["conference", "lot", "fun", "lot", "people", "technology", "exhibits", "speakers", "things", "day", "home"],
+    ["conference", "lot", "fun", "lot", "people", "technology", "speaker", "complaints", "home"],
+    ["conference", "expo", "books", "technology", "lot", "people", "speakers", "speakers", "presentations", "afterwards", "opportunity", "share", "information", "technology", "home"]
+  ],
+  "c_mt_noun_arel": 11.0,
+  "c_pe_noun_arel": 8.8,
+  "mt_arel": ["we went to a local mexican restaurant for the first time .", "there were a lot of people there .", "there were a lot of people there .", "there were many speakers at the event .", "we had a great time and had a great time ."],
+  "mt_arel_noun": ["mexican", "restaurant", "time", "lot", "people", "lot", "people", "speakers", "event", "time", "time"],
+  "pe_arel": [
+    ["we went to a local mexican restaurant for the first time for a gathering of an event .", "there were a lot of people there .", "the speaker was very patriotic .", "the decor of flags just added to the theme .", "we had a great time ."],
+    ["we went to a political book show today .", "there were a lot of people there .", "there were a few speakers at the event .", "we had a great time ."],
+    ["we went to a neighborhood mexican restaurant for the first time .", "there were a many people there .", "there were many people there .", "there were many speakers at the occasion .", "we had a extraordinary time and had a awesome time ."],
+    ["we went to a local mexican restaurant for the first time .", "there were a lot of people there .", "there were many speakers at the event .", "we had a great time and wanted to go back ."],
+    ["we went to this local mexican restaurant for the first time .", "there were a lot of people there !", "there were even speakers and events .", "we had a great time ."]
+  ],
+  "pe_arel_noun": [
+    ["mexican", "restaurant", "time", "gathering", "event", "lot", "people", "speaker", "decor", "flags", "theme", "time"],
+    ["book", "show", "today", "lot", "people", "speakers", "event", "time"],
+    ["neighborhood", "restaurant", "time", "people", "people", "speakers", "occasion", "time", "time"],
+    ["mexican", "restaurant", "time", "lot", "people", "speakers", "event", "time"],
+    ["restaurant", "time", "lot", "people", "speakers", "events", "time"]
+  ]
+}]
