@@ -36,8 +36,8 @@ def main(argv):
     # This is for the text analysis of APE data
     read_ape_data("GLAC/") # the Korean team
     #read_ape_data("AREL/") # the William one
-    compare_pos(mt_all, pe_all)
-    #compare_ttr_by_story(mt_all, pe_all)
+    #compare_pos(mt_all, pe_all)
+    compare_ttr_by_story(mt_all, pe_all)
     #compare_ttr_all(mt_all, pe_all)
 
     # BUG: the followings does not work since we changed the structure of pe_all
@@ -91,23 +91,31 @@ def compute_ttr_all(text_corpus):
     return len(word_type) / num_words
 
 def compare_ttr_by_story(mt_all, pe_all):
-    d = {"mean": [], "std": []}
-    m, v, ttr_mt = compute_ttr_by_story(mt_all)
-    d["mean"].append(m)
-    d["std"].append(v)
-    m, v, ttr_pe = compute_ttr_by_story(pe_all)
-    d["mean"].append(m)
-    d["std"].append(v)
+    d = {"mean_ttr": [], "std_ttr": [], "mean_num_words": [], "std_num_words": []}
+    ttr_mt, num_words_mt = compute_ttr_by_story(mt_all)
+    d["mean_ttr"].append(np.mean(ttr_mt))
+    d["std_ttr"].append(np.std(ttr_mt))
+    d["mean_num_words"].append(np.mean(num_words_mt))
+    d["std_num_words"].append(np.std(num_words_mt))
+    ttr_pe, num_words_pe = compute_ttr_by_story(pe_all)
+    d["mean_ttr"].append(np.mean(ttr_pe))
+    d["std_ttr"].append(np.std(ttr_pe))
+    d["mean_num_words"].append(np.mean(num_words_pe))
+    d["std_num_words"].append(np.std(num_words_pe))
     df = pd.DataFrame(d)
     df.index = ["Pre-Edit", "Post-Edit"]
     df = df.round(2)
     print(df)
     df.to_csv("ttr_story.csv")
+
     plot_kde(ttr_mt, ttr_pe, "ttr_story.png")
+
     print("n=", len(ttr_mt), len(ttr_pe))
-    s, p = stats.ttest_rel(ttr_mt, ttr_pe)
-    df_ttest = pd.DataFrame({"test_statistic": [s], "p_value": [p], "N": [len(ttr_mt)]})
+    s_ttr, p_ttr = stats.ttest_rel(ttr_mt, ttr_pe)
+    s_num_words, p_num_words = stats.ttest_rel(num_words_mt, num_words_pe)
+    df_ttest = pd.DataFrame({"test_statistic": [s_ttr, s_num_words], "p_value": [p_ttr, p_num_words], "N": [len(ttr_mt), len(num_words_mt)]})
     df_ttest = df_ttest.round(6)
+    df_ttest.index = ["ttr", "num_words"]
     print(df_ttest)
     df_ttest.to_csv("ttr_paired_ttest_two_tail.csv")
 
@@ -134,6 +142,7 @@ def plot_kde(a, b, file_name):
 # Token-type ratio
 def compute_ttr_by_story(text_corpus):
     ttr = []
+    num_words = []
     for story in text_corpus:
         word_type_story = Counter()
         num_words_story = 0
@@ -147,8 +156,10 @@ def compute_ttr_by_story(text_corpus):
                         word_type_story[word_type] += 1
                         num_words_story += 1
             ttr.append(len(word_type_story) / num_words_story)
+            num_words.append(num_words_story)
         elif type(story[0]) == list: # this means multiple workers submit multiple versions of the story
             ttr_story = []
+            num_words_story = []
             for worker_submit in story:
                 word_type_worker = Counter()
                 num_words_worker = 0
@@ -161,8 +172,10 @@ def compute_ttr_by_story(text_corpus):
                             word_type_worker[word_type] += 1
                             num_words_worker += 1
                 ttr_story.append(len(word_type_worker) / num_words_worker)
+                num_words_story.append(num_words_worker)
             ttr.append(np.mean(ttr_story))
-    return (np.mean(ttr), np.std(ttr), ttr)
+            num_words.append(np.mean(num_words_story))
+    return (ttr, num_words)
 
 def compare_pos(mt_all, pe_all):
     df_mt, c_story_list_mt = compute_pos_table(mt_all)
