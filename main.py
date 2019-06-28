@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 import itertools
 import numpy as np
-from util.python3.Util import Util
+from Util import Util
 import re
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
@@ -34,10 +34,10 @@ class LemmaTokenizer(object):
 
 def main(argv):
     # This is for the text analysis of APE data
-    read_ape_data("GLAC/") # the Korean team
-    #read_ape_data("AREL/") # the William one
-    #compare_pos(mt_all, pe_all)
-    compare_ttr_by_story(mt_all, pe_all)
+    #read_ape_data("GLAC/") # the Korean team
+    read_ape_data("AREL/") # the William one
+    compare_pos(mt_all, pe_all)
+    #compare_ttr_by_story(mt_all, pe_all)
     #compare_ttr_all(mt_all, pe_all)
 
     # BUG: the followings does not work since we changed the structure of pe_all
@@ -185,7 +185,7 @@ def compare_pos(mt_all, pe_all):
     df_diff = df_pe - df_mt
     df = pd.concat([df_mt, df_pe])
     df.loc["Diff"] = df.loc["Post-Edit"] - df.loc["Pre-Edit"]
-    df = df.round(2)
+    df = df.round(1)
     print(df)
     df.to_csv("pos.csv")
 
@@ -279,7 +279,7 @@ def compute_ngrams_tf_idf(text_corpus, out_p, n=20, tp="tf-idf", g=3, lv=1, titl
     data = []
     for i in range(g):
         data.append(compute_tf_idf(text_corpus, n=n, n_gram=i+1, tp=tp, lv=lv))
-    
+
     # Plot
     x = []
     y = []
@@ -296,7 +296,7 @@ def replace(string, substitutions):
     return regex.sub(lambda match: substitutions[match.group(0)], string)
 
 # defines a custom vectorizer class
-class CustomTfidfVectorizer(TfidfVectorizer): 
+class CustomTfidfVectorizer(TfidfVectorizer):
     # overwrite the build_analyzer method, allowing one to create a custom analyzer for the vectorizer
     def build_analyzer(self):
         # load stop words using CountVectorizer's built in method
@@ -429,7 +429,7 @@ def compute_ngrams_count(text_corpus, out_p, n=20):
         x_ng = []
         y_ng = []
         for d in data[i]:
-            if i==0: 
+            if i==0:
                 x_ng.append(d[0])
             else:
                 x_ng.append(" ".join(d[0]))
