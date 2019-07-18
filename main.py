@@ -35,8 +35,8 @@ class LemmaTokenizer(object):
 def main(argv):
     # This is for the text analysis of APE data
     #read_ape_data("GLAC/") # the Korean team
-    read_ape_data("AREL/") # the William one
-    compare_pos(mt_all, pe_all)
+    #read_ape_data("AREL/") # the William one
+    #compare_pos(mt_all, pe_all)
     #compare_ttr_by_story(mt_all, pe_all)
     #compare_ttr_all(mt_all, pe_all)
 
@@ -54,7 +54,7 @@ def main(argv):
     #compute_ngrams_tf_idf(pe_all, "pe_ngram_df.png", tp="df")
 
     # This is for the text analysis of Smell Pittsburgh Data
-    #analyze_smell_data()
+    analyze_smell_data()
 
 def compare_ttr_all(mt_all, pe_all):
     d = {"ttr": []}
@@ -266,7 +266,7 @@ def analyze_smell_data():
         x.append(d["f"][::-1])
         y.append(d["v"][::-1])
     util.plot_bar_chart_grid(x, y, 2, 2, title, out_p,
-        tick_font_size=18, title_font_size=18, h_size=5, w_size=5, wspace=0.8, hspace=0.2, rotate=True)
+        tick_font_size=18, title_font_size=18, h_size=5, w_size=5, wspace=1, hspace=0.2, rotate=True)
 
 def read_ape_data(path):
     print("Read ape data...")
