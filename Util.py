@@ -55,7 +55,7 @@ class Util(object):
     (x and y are one-level nesting lists)
     (title is a list)
     """
-    def plot_bar_chart_grid(self, x, y, h, w, title, out_p,
+    def plot_bar_chart_grid(self, x, y, h, w, title, sup_title, out_p, sup_title_font_size=16, sup_top=0.8,
             h_size=1.5, w_size=12, tick_font_size=10, title_font_size=14, hspace=0, wspace=0, rotate=False):
         fig = plt.figure(figsize=(w*w_size, h*h_size))
         c = 1
@@ -72,8 +72,9 @@ class Util(object):
             #for j in range(0, len(y[i])):
             #   ax.text(j, y[i][j], int(y[i][j]), color=(0.2,0.2,0.2), ha="center", fontsize=10)
 
+        plt.suptitle(sup_title, fontsize=sup_title_font_size)
         plt.tight_layout()
-        plt.subplots_adjust(hspace=hspace, wspace=wspace)
+        plt.subplots_adjust(hspace=hspace, wspace=wspace, top=sup_top)
         fig.savefig(out_p, dpi=150, transparent=True)
         fig.clf()
         plt.close()
